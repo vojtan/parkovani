@@ -1,14 +1,7 @@
+<script setup></script>
+
 <template>
-  <div>Hello {{ value }}</div>
+    <router-view />
 </template>
 
-<script>
-export default {
-  name: "App",
-  data() {
-    return {
-      value: "World"
-    };
-  }
-};
-</script>
+<style scoped></style>
