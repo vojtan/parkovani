@@ -1,0 +1,10 @@
+{
+    "configurations": {
+        "app": {
+            "appLocation": ".",
+            "outputLocation": "dist",
+            "appBuildCommand": "npm run build",
+            "run": "npm run dev"
+        }
+    }
+}
