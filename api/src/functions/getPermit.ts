@@ -3,8 +3,7 @@ const { ClientSecretCredential } = require('@azure/identity');
 const { Client } = require('@microsoft/microsoft-graph-client');
 const { TokenCredentialAuthenticationProvider } = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
 
-
-export async function permits(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function getPermit(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
         // Get configuration values from environment variables
         const tenantId = process.env.TENANT_ID;
@@ -22,6 +21,18 @@ export async function permits(request: HttpRequest, context: InvocationContext):
             };
         }
 
+        // Get the permit ID from the URL parameter
+        const permitId = request.params.id;
+        
+        if (!permitId) {
+            return {
+                status: 400,
+                body: JSON.stringify({
+                    error: 'Missing permit ID'
+                })
+            };
+        }
+
         // Set up the authentication provider using client credentials
         const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
         const authProvider = new TokenCredentialAuthenticationProvider(credential, {
@@ -33,38 +44,43 @@ export async function permits(request: HttpRequest, context: InvocationContext):
             authProvider: authProvider
         });
 
-        // Get list items
+        // Get the item from the SharePoint list
         const response = await graphClient
-            .api(`/sites/${siteId}/lists/${listId}/items`)
-            .expand('fields')
+            .api(`/sites/${siteId}/lists/${listId}/items/${permitId}?expand=fields`)
             .get();
 
-        // Extract relevant data from the response
-        const items = response.value.map(item => {
-            return item.fields;
-        });
+        // Extract the relevant fields from the response
+        const permit = {
+            id: response.id,
+            validFrom: response.fields.validFrom,
+            validTo: response.fields.validTo,
+            price: response.fields.price,
+            status: response.fields.status,
+            variableSymbol: response.fields.variableSymbol,
+        };
 
         return {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(items)
+            body: JSON.stringify(permit)
         };
     } catch (error) {
+        context.log('Error getting permit:', error);
         
         return {
             status: 500,
             body: JSON.stringify({
-                 error
+                error: error.message || 'An error occurred while retrieving the permit'
             })
         };
     }
-};
+}
 
-app.http('getPermits', {
+app.http('getPermit', {
     methods: ['GET'],
     authLevel: 'anonymous',
-    route: 'permits',
-    handler: permits
+    route: 'permits/{id}',
+    handler: getPermit
 });

@@ -1,10 +1,10 @@
 <script setup>
-import { ProductService } from "@/service/ProductService";
+import { PermitService } from "@/service/PermitService";
 import { FilterMatchMode } from "@primevue/core/api";
 import { onMounted, ref } from "vue";
 
 onMounted(() => {
-    ProductService.getParkingPermits().then((data) => (products.value = data));
+    PermitService.getParkingPermits().then((data) => (products.value = data));
 });
 
 const dt = ref();
@@ -13,6 +13,17 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
+
+const toStatus = (status) => {
+    switch (status) {
+        case "paid":
+            return "Zaplaceno/Aktivní";
+        case "submitted":
+            return "Čeká na zaplacení";
+        default:
+            return status;
+    }
+};
 
 
 
@@ -59,7 +70,7 @@ const filters = ref({
                 </Column>
                 <Column field="status" header="Stav" sortable style="min-width: 10rem">
                     <template #body="slotProps">
-                        {{slotProps.data.status === 1 ? 'Aktivní' : 'Neaktivní'}}
+                        {{ toStatus(slotProps.data.status) }}
                     </template>
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem">
@@ -74,3 +85,4 @@ const filters = ref({
 
     </div>
 </template>
+@/service/PermitService

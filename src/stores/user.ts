@@ -6,6 +6,7 @@ interface UserState {
     lastName: string;
     street: string;
     city: string;
+    streetNumber: number;
     email: string;
 }
 
@@ -24,6 +25,7 @@ export const useUserStore = defineStore("user", {
         lastName: "Nádvorník",
         street: "Zámecká",
         city: "Děčín",
+        streetNumber: 1087,
         email: "vojtech.nadvornik@live.com",
     }),
 
