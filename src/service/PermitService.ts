@@ -2,6 +2,15 @@ export interface Permit {
     validFrom: Date;
     validTo: Date;
     price: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    city: string;
+    street: string;
+    houseNumber: string;
+    permitDuration: string;
+    paymentMethod: string;
+    variableSymbol: string | null;
 }
 
 export const PermitService = {
@@ -14,6 +23,13 @@ export const PermitService = {
         return data;
     },
     
+    async getPermit(id: string) {
+        const response = await fetch(`/api/permits/${id}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
+    },
     async addPermit(permitData : Permit) {
         const response = await fetch("/api/permits", {
             method: "POST",

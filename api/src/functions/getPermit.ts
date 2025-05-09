@@ -56,7 +56,7 @@ export async function getPermit(request: HttpRequest, context: InvocationContext
             validTo: response.fields.validTo,
             price: response.fields.price,
             status: response.fields.status,
-            variableSymbol: response.fields.variableSymbol,
+            variableSymbol: response.fields.variablesymbol,
         };
 
         return {

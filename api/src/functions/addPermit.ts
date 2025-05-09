@@ -52,7 +52,16 @@ export async function addPermit(request: HttpRequest, context: InvocationContext
         const itemFields = {
             validFrom: permitData.validFrom,
             validTo: permitData.validTo,
-            price: permitData.price
+            price: permitData.price,
+            firstname: permitData.firstname || null,
+            lastname: permitData.lastname || null,
+            email: permitData.email || null,
+            city: permitData.city || null,
+            street: permitData.street || null,
+            housenumber: permitData.houseNumber || null,
+            permitduration: permitData.permitDuration || null,
+            paymentmethod: permitData.paymentMethod || null,
+            carregistration: permitData.carRegistration || null,    
         };
 
         // Create a new item in the SharePoint list

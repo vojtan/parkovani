@@ -1,7 +1,7 @@
 
 export interface Address{
     street: string;
-    numbers: number[];
+    numbers: string[];
 }
 export interface Zone {
     pricePerYear: number;
@@ -23,7 +23,7 @@ export const ZoneService = {
                 pricePerQuarterWithDiscount: 500,
                 name: "Děčín",
                 adresses: [
-                    { street: "Zámecká", numbers:[1087] },
+                    { street: "Zámecká", numbers:["1087"] },
                     { street: "Tyršova", numbers: [] },
                     { street: "Karla Čapka", numbers: [] },
                     { street: "Labská", numbers: [] },

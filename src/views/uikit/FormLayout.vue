@@ -46,34 +46,78 @@ const { handleSubmit, errors } = useForm({
 });
 
 onMounted(async () => {
-    zones.value =  ZoneService.getZones();
+    zones.value = ZoneService.getZones();
 });
 
-const { value: carRegistration } = useField("carRegistration");
-const { value: selectedZones } = useField("selectedZones", []);
-const { value: email } = useField("email");
-const { value: firstName } = useField("firstName");
-const { value: lastName } = useField("lastName");
-const { value: city } = useField("city");
-const { value: street } = useField("street");
-const { value: streetNumber } = useField("streetNumber");
+const { value: carRegistration } = useField<string>("carRegistration");
+const { value: selectedZones } = useField<Zone[]>("selectedZones", []);
+const { value: email } = useField<string>("email");
+const { value: firstName } = useField<string>("firstName");
+const { value: lastName } = useField<string>("lastName");
+const { value: city } = useField<string>("city");
+const { value: street } = useField<string>("street");
+const { value: streetNumber } = useField<string>("streetNumber");
 const { value: startDate } = useField<Date>("startDate");
 let selectedDuration = ref("1year");
 let selectePayment = ref("online"); // Default payment method
+const showDialog = ref(false); // New ref for dialog visibility
 
 // Calculate tomorrow for min date on Calendar
 
 // Form submission handler
-const onSubmit = handleSubmit((values) => {
+const onSubmit =  handleSubmit(async (values) => {
+    // Show dialog
+    showDialog.value = true;
+    
     // Update user store with form values
-    PermitService.addPermit({ validFrom: startDate.value, validTo: startDate.value, price: totalPrice.value });
-    alert("Form submitted successfully!");
+    var result = await PermitService.addPermit({
+        validFrom: startDate.value,
+        validTo: startDate.value,
+        price: totalPrice.value,
+        firstname: firstName.value,
+        lastname: lastName.value,
+        email: email.value,
+        city: city.value,
+        street: street.value,
+        houseNumber: streetNumber.value,
+        permitDuration: selectedDuration.value,
+        paymentMethod: selectePayment.value,
+        variableSymbol: null,
+    });
+    
+    // Wait a moment before starting to poll for the permit
+    setTimeout(async () => {
+        // Start polling for the permit until variableSymbol is set
+        const pollInterval = setInterval(async () => {
+            try {
+                const permit = await PermitService.getPermit(result.id);
+                if (permit.variableSymbol) {
+                    // Clear the interval to stop polling
+                    clearInterval(pollInterval);
+                    // Hide the dialog
+                    showDialog.value = false;
+                    // Redirect to the payment portal with the variable symbol
+                    window.location.href = `https://platby.mmdecin.cz/zpo/platba?action=ko_def&typvstupu=vs&vstupniIdentifikatorField=${permit.variableSymbol}`;
+                }
+            } catch (error) {
+                console.error("Error polling for permit:", error);
+            }
+        }, 2000); 
+        
+        // Set a timeout to stop polling after a reasonable time (e.g., 30 seconds)
+        setTimeout(() => {
+            clearInterval(pollInterval);
+            showDialog.value = false;
+            alert("Vyřízení žádosti trvá déle než obvykle. Zkontrolujte stav žádosti později.");
+        }, 60000);
+    }, 2000);
+    
     // Handle form submission
     console.log(values);
 });
 
-const isHomeZone = (zone : Zone) => {
-    const addresses = zone.adresses.filter(x=> x.street == street.value && "Děčín" == city.value);
+const isHomeZone = (zone: Zone) => {
+    const addresses = zone.adresses.filter(x => x.street == street.value && "Děčín" == city.value);
     if (addresses.length === 0) {
         return false;
     }
@@ -82,7 +126,7 @@ const isHomeZone = (zone : Zone) => {
         return true;
     }
 
-    return address.numbers.filter(x=> x == streetNumber.value).length > 0;
+    return address.numbers.filter(x => x == streetNumber.value).length > 0;
 };
 
 const totalPrice = computed(() => {
@@ -117,50 +161,50 @@ const totalPrice = computed(() => {
                         <label for="name1"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Jméno</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText disabled id="name1" type="text" v-model="firstName" />
+                            <InputText  id="name1" type="text" v-model="firstName" />
                             <small v-if="errors.firstName" class="p-error">{{
                                 errors.firstName
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="name2"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Příjmení</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText disabled id="name2" type="text" v-model="lastName" />
+                            <InputText  id="name2" type="text" v-model="lastName" />
                             <small v-if="errors.lastName" class="p-error">{{
                                 errors.lastName
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="name2"
-                            class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Příjmení</label>
+                            class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Město</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText disabled id="name2" type="text" v-model="city" />
+                            <InputText  id="name2" type="text" v-model="city" />
                             <small v-if="errors.lastName" class="p-error">{{
                                 errors.lastName
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="street"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Ulice</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText disabled id="street" type="text" v-model="street" />
+                            <InputText  id="street" type="text" v-model="street" />
                             <small v-if="errors.street" class="p-error">{{
                                 errors.street
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
-                        <label for="street"
-                            class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Číslo popisné</label>
+                        <label for="street" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Číslo
+                            popisné</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText disabled id="streetNumber" type="text" v-model="streetNumber" />
+                            <InputText  id="streetNumber" type="text" v-model="streetNumber" />
                             <small v-if="errors.streetNumber" class="p-error">{{
                                 errors.street
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
@@ -170,7 +214,7 @@ const totalPrice = computed(() => {
                             <InputText id="email" type="email" v-model="email" placeholder="example@domain.com" />
                             <small v-if="errors.email" class="p-error">{{
                                 errors.email
-                                }}</small>
+                            }}</small>
                         </div>
                     </div>
                 </div>
@@ -199,13 +243,13 @@ const totalPrice = computed(() => {
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="zones" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Zóny</label>
                         <div class="col-span-12 md:col-span-10 flex flex-wrap gap-4">
-                            <div v-for="zone in zones" :key="zone" class="flex items-center">
-                                <Checkbox :id="zone.id"  :value="zone" v-model="selectedZones" />
-                                <label :for="zone.id" class="ml-2">{{ zone.name }}</label>
+                            <div v-for="zone in zones" :key="zone.name" class="flex items-center">
+                                <Checkbox :id="zone.name" :value="zone" v-model="selectedZones" />
+                                <label :for="zone.name" class="ml-2">{{ zone.name }}</label>
                             </div>
                             <div>
                                 <small v-if="errors.selectedZones" class="p-error ml-2">{{ errors.selectedZones
-                                    }}</small>
+                                }}</small>
                             </div>
                         </div>
                     </div>
@@ -256,4 +300,12 @@ const totalPrice = computed(() => {
             </div>
         </div>
     </Fluid>
+    
+    <!-- Processing Dialog -->
+    <Dialog v-model:visible="showDialog" :closable="false" :modal="true" header="Zpracování">
+        <div class="flex flex-column align-items-center">
+            <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+            <span class="mt-3">Probíhá schválení žádosti. Po schválení budete přesměrováni na platební bránu.</span>
+        </div>
+    </Dialog>
 </template>
