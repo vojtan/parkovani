@@ -28,6 +28,16 @@
 			"options": {
 				"cwd": "${workspaceFolder}/api"
 			}
+		},
+		{
+			"type": "shell",
+			"label": "swa: start",
+			"command": "swa start --api-location ./api --api-debug",
+			"problemMatcher": "$msCompile",
+			"isBackground": true,
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
 		}
 	]
 }

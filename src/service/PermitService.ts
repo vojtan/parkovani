@@ -1,4 +1,5 @@
 export interface Permit {
+    carRegistration: string;
     validFrom: Date;
     validTo: Date;
     price: number;

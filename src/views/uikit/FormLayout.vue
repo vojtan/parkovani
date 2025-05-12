@@ -71,8 +71,9 @@ const onSubmit =  handleSubmit(async (values) => {
     
     // Update user store with form values
     var result = await PermitService.addPermit({
+        carRegistration: carRegistration.value,
         validFrom: startDate.value,
-        validTo: startDate.value,
+        validTo: endDate.value,
         price: totalPrice.value,
         firstname: firstName.value,
         lastname: lastName.value,
@@ -85,18 +86,14 @@ const onSubmit =  handleSubmit(async (values) => {
         variableSymbol: null,
     });
     
-    // Wait a moment before starting to poll for the permit
     setTimeout(async () => {
         // Start polling for the permit until variableSymbol is set
         const pollInterval = setInterval(async () => {
             try {
                 const permit = await PermitService.getPermit(result.id);
                 if (permit.variableSymbol) {
-                    // Clear the interval to stop polling
                     clearInterval(pollInterval);
-                    // Hide the dialog
                     showDialog.value = false;
-                    // Redirect to the payment portal with the variable symbol
                     window.location.href = `https://platby.mmdecin.cz/zpo/platba?action=ko_def&typvstupu=vs&vstupniIdentifikatorField=${permit.variableSymbol}`;
                 }
             } catch (error) {
@@ -104,15 +101,13 @@ const onSubmit =  handleSubmit(async (values) => {
             }
         }, 2000); 
         
-        // Set a timeout to stop polling after a reasonable time (e.g., 30 seconds)
         setTimeout(() => {
             clearInterval(pollInterval);
             showDialog.value = false;
             alert("Vyřízení žádosti trvá déle než obvykle. Zkontrolujte stav žádosti později.");
-        }, 60000);
+        }, 180000);
     }, 2000);
     
-    // Handle form submission
     console.log(values);
 });
 
@@ -128,6 +123,16 @@ const isHomeZone = (zone: Zone) => {
 
     return address.numbers.filter(x => x == streetNumber.value).length > 0;
 };
+
+const endDate = computed(() => {
+    const start = new Date(startDate.value);
+    if (selectedDuration.value === "3months") {
+        start.setMonth(start.getMonth() + 3);
+    } else if (selectedDuration.value === "1year") {
+        start.setFullYear(start.getFullYear() + 1);
+    }
+    return start;
+});	
 
 const totalPrice = computed(() => {
     let result = 0;
@@ -241,6 +246,13 @@ const totalPrice = computed(() => {
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
+                        <label for="endDate" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Konec
+                            oprávnění</label>
+                        <div class="col-span-12 md:col-span-10">
+                            {{ endDate.toLocaleDateString() }}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="zones" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Zóny</label>
                         <div class="col-span-12 md:col-span-10 flex flex-wrap gap-4">
                             <div v-for="zone in zones" :key="zone.name" class="flex items-center">
@@ -305,7 +317,7 @@ const totalPrice = computed(() => {
     <Dialog v-model:visible="showDialog" :closable="false" :modal="true" header="Zpracování">
         <div class="flex flex-column align-items-center">
             <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-            <span class="mt-3">Probíhá schválení žádosti. Po schválení budete přesměrováni na platební bránu.</span>
+            <span class="mt-3">Probíhá schválení žádosti. Po schválení žádosti budete přesměrováni na platební bránu, kde budete moct zaplatit.</span>
         </div>
     </Dialog>
 </template>
