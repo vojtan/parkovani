@@ -1,14 +1,84 @@
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { UserService } from '@/service/UserService';
+import { PermitService } from '@/service/PermitService';
+import UserProfile from '@/components/UserProfile.vue';
 
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
+const userStore = useUserStore();
+const permitMessage = ref('');
+const permitError = ref('');
+const isLoading = ref(false);
+
+const loadSampleUser = async () => {
+    try {
+        permitMessage.value = '';
+        permitError.value = '';
+        isLoading.value = true;
+        
+        // Using import.meta.url helps get the right path in Vite build
+        await userStore.loadFromXml('/src/assets/sampleuser.xml');
+        
+        // Populate email with the loaded user's email
+        email.value = userStore.email;
+        console.log('User loaded successfully:');
+        console.log('User ID:', userStore.userId);
+        console.log('Name:', userStore.fullName);
+        console.log('Email:', userStore.email);
+        console.log('Address:', userStore.fullAddress);
+    } catch (error) {
+        console.error('Error loading sample user:', error);
+        permitError.value = 'Error loading sample user';
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const applyForPermit = async () => {
+    if (!userStore.userId) {
+        permitError.value = 'Please load a user first';
+        return;
+    }
+    
+    try {
+        permitMessage.value = '';
+        permitError.value = '';
+        isLoading.value = true;
+        
+        const userData = UserService.getUserForPermitApplication();
+        
+        // Create a sample parking permit
+        const permitData = {
+            ...userData,
+            carRegistration: 'ABC123',
+            validFrom: new Date(),
+            validTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            price: 1200,
+            permitDuration: '1 month',
+            paymentMethod: 'Card',
+            houseNumber: userData.housenumber.toString(),
+            variableSymbol: Math.floor(Math.random() * 1000000).toString()
+        };
+        
+        // Call the API
+        const result = await PermitService.addPermit(permitData);
+        
+        permitMessage.value = `Permit application successful! Permit ID: ${result.id}`;
+        console.log('Permit created:', result);
+    } catch (error) {
+        console.error('Error applying for permit:', error);
+        permitError.value = `Error applying for permit: ${error.message || 'Unknown error'}`;
+    } finally {
+        isLoading.value = false;
+    }
+};
 </script>
 
 <template>
-    <FloatingConfigurator />
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -44,11 +114,23 @@ const checked = ref(false);
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                <label for="rememberme1">Remember me</label>
-                            </div>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
+                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>                            <label for="rememberme1">Remember me</label>
                         </div>
+                        <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
+                    </div>                    <div class="mb-4 flex gap-2">
+                        <Button label="Load Sample User" @click="loadSampleUser" class="p-button-secondary p-button-sm" :loading="isLoading" />
+                        <Button label="Apply for Permit" @click="applyForPermit" class="p-button-success p-button-sm" :disabled="!userStore.userId" :loading="isLoading" />
+                    </div>
+                    
+                    <div v-if="permitMessage" class="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+                        {{ permitMessage }}
+                    </div>
+                    
+                    <div v-if="permitError" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                        {{ permitError }}
+                    </div>
+                    
+                    <UserProfile class="mt-4" />
                         <Button label="Sign In" class="w-full" as="router-link" to="/"></Button>
                     </div>
                 </div>

@@ -5,10 +5,22 @@ import * as yup from "yup";
 import { useUserStore } from "../../stores/user";
 import { ZoneService, Zone } from "@/service/ZoneService";
 import { PermitService } from "@/service/PermitService";
+import { storeToRefs } from 'pinia'
+
 
 const userStore = useUserStore();
+const {// carRegistration,
+   // selectedZones,
+    email,
+    firstName,
+    lastName,
+    city,
+    street,
+    houseNumber,
+ //   startDate
+} = storeToRefs(userStore);
 
-const schema = yup.object({
+const validationSchema = yup.object({
     carRegistration: yup
         .string()
         .required("Zadejte SPZ")
@@ -31,7 +43,7 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const zones = ref<Zone[]>([]);
 const { handleSubmit, errors } = useForm({
-    validationSchema: schema,
+    validationSchema: validationSchema,
     initialValues: {
         carRegistration: "",
         selectedZones: [],
@@ -40,36 +52,32 @@ const { handleSubmit, errors } = useForm({
         lastName: userStore.lastName || "",
         street: userStore.street || "",
         city: userStore.city || "",
-        streetNumber: userStore.streetNumber || "",
+        houseNumber: userStore.houseNumber || "",
         startDate: tomorrow,
     },
 });
 
 onMounted(async () => {
     zones.value = ZoneService.getZones();
+    userStore.loadFromXml('/src/assets/sampleuser.xml');
 });
 
-const { value: carRegistration } = useField<string>("carRegistration");
-const { value: selectedZones } = useField<Zone[]>("selectedZones", []);
-const { value: email } = useField<string>("email");
-const { value: firstName } = useField<string>("firstName");
-const { value: lastName } = useField<string>("lastName");
-const { value: city } = useField<string>("city");
-const { value: street } = useField<string>("street");
-const { value: streetNumber } = useField<string>("streetNumber");
-const { value: startDate } = useField<Date>("startDate");
+ const { value: carRegistration } = useField<string>("carRegistration");
+ const { value: selectedZones } = useField<Zone[]>("selectedZones", []);
+// const { value: email } = useField<string>("email");
+// const { value: firstName } = useField<string>("firstName");
+// const { value: lastName } = useField<string>("lastName");
+// const { value: city } = useField<string>("city");
+// const { value: street } = useField<string>("street");
+// const { value: houseNumber } = useField<string>("houseNumber");
+ const { value: startDate } = useField<Date>("startDate");
 let selectedDuration = ref("1year");
 let selectePayment = ref("online"); // Default payment method
-const showDialog = ref(false); // New ref for dialog visibility
+const showDialog = ref(false);
 
-// Calculate tomorrow for min date on Calendar
-
-// Form submission handler
-const onSubmit =  handleSubmit(async (values) => {
-    // Show dialog
+const onSubmit = handleSubmit(async (values) => {
     showDialog.value = true;
-    
-    // Update user store with form values
+
     var result = await PermitService.addPermit({
         carRegistration: carRegistration.value,
         validFrom: startDate.value,
@@ -80,12 +88,12 @@ const onSubmit =  handleSubmit(async (values) => {
         email: email.value,
         city: city.value,
         street: street.value,
-        houseNumber: streetNumber.value,
+        houseNumber: houseNumber.value,
         permitDuration: selectedDuration.value,
         paymentMethod: selectePayment.value,
         variableSymbol: null,
     });
-    
+
     setTimeout(async () => {
         // Start polling for the permit until variableSymbol is set
         const pollInterval = setInterval(async () => {
@@ -99,15 +107,15 @@ const onSubmit =  handleSubmit(async (values) => {
             } catch (error) {
                 console.error("Error polling for permit:", error);
             }
-        }, 2000); 
-        
+        }, 2000);
+
         setTimeout(() => {
             clearInterval(pollInterval);
             showDialog.value = false;
             alert("Vyřízení žádosti trvá déle než obvykle. Zkontrolujte stav žádosti později.");
         }, 180000);
     }, 2000);
-    
+
     console.log(values);
 });
 
@@ -121,7 +129,7 @@ const isHomeZone = (zone: Zone) => {
         return true;
     }
 
-    return address.numbers.filter(x => x == streetNumber.value).length > 0;
+    return address.numbers.filter(x => x == houseNumber.value).length > 0;
 };
 
 const endDate = computed(() => {
@@ -132,7 +140,7 @@ const endDate = computed(() => {
         start.setFullYear(start.getFullYear() + 1);
     }
     return start;
-});	
+});
 
 const totalPrice = computed(() => {
     let result = 0;
@@ -166,60 +174,60 @@ const totalPrice = computed(() => {
                         <label for="name1"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Jméno</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText  id="name1" type="text" v-model="firstName" />
+                            <InputText id="name1" type="text" v-model="userStore.firstName" />
                             <small v-if="errors.firstName" class="p-error">{{
                                 errors.firstName
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="name2"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Příjmení</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText  id="name2" type="text" v-model="lastName" />
+                            <InputText id="name2" type="text" v-model="lastName" />
                             <small v-if="errors.lastName" class="p-error">{{
                                 errors.lastName
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="name2"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Město</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText  id="name2" type="text" v-model="city" />
+                            <InputText id="name2" type="text" v-model="city" />
                             <small v-if="errors.lastName" class="p-error">{{
                                 errors.lastName
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="street"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Ulice</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText  id="street" type="text" v-model="street" />
+                            <InputText id="street" type="text" v-model="street" />
                             <small v-if="errors.street" class="p-error">{{
                                 errors.street
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="street" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Číslo
                             popisné</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText  id="streetNumber" type="text" v-model="streetNumber" />
-                            <small v-if="errors.streetNumber" class="p-error">{{
+                            <InputText id="houseNumber" type="text" v-model="houseNumber" />
+                            <small v-if="errors.houseNumber" class="p-error">{{
                                 errors.street
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-4">
                         <label for="email"
                             class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">E-mail</label>
                         <div class="col-span-12 md:col-span-10">
-                            <InputText id="email" type="email" v-model="email" placeholder="example@domain.com" />
+                            <InputText id="email" type="email" v-model="email" placeholder="" />
                             <small v-if="errors.email" class="p-error">{{
                                 errors.email
-                            }}</small>
+                                }}</small>
                         </div>
                     </div>
                 </div>
@@ -261,7 +269,7 @@ const totalPrice = computed(() => {
                             </div>
                             <div>
                                 <small v-if="errors.selectedZones" class="p-error ml-2">{{ errors.selectedZones
-                                }}</small>
+                                    }}</small>
                             </div>
                         </div>
                     </div>
@@ -312,12 +320,14 @@ const totalPrice = computed(() => {
             </div>
         </div>
     </Fluid>
-    
+
     <!-- Processing Dialog -->
     <Dialog v-model:visible="showDialog" :closable="false" :modal="true" header="Zpracování">
         <div class="flex flex-column align-items-center">
-            <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-            <span class="mt-3">Probíhá schválení žádosti. Po schválení žádosti budete přesměrováni na platební bránu, kde budete moct zaplatit.</span>
+            <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)"
+                animationDuration=".5s" />
+            <span class="mt-3">Probíhá schválení žádosti. Po schválení žádosti budete přesměrováni na platební bránu,
+                kde budete moct zaplatit.</span>
         </div>
     </Dialog>
 </template>

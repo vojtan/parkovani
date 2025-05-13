@@ -39,20 +39,11 @@ const toStatus = (status) => {
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" v-model:selection="selectedProducts" :value="products" dataKey="id" :paginator="true"
-                :rows="10" :filters="filters"
-                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
+            <DataTable ref="dt" v-model:selection="selectedProducts" :value="products" dataKey="id" 
+                :rows="10" >
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Parkovací oprávnění</h4>
-                        <IconField>
-                            <InputIcon>
-                                <i class="pi pi-search" />
-                            </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Search..." />
-                        </IconField>
+                        <h4 class="m-0">Vaše parkovací oprávnění</h4>
                     </div>
                 </template>
 

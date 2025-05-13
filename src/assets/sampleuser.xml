@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="_0c392a8c-07ab-4780-9bb4-0cee63dca609" Version="2.0" IssueInstant="2019-11-28T15:41:05Z">
+  <saml:Issuer>urn:microsoft:cgg2010:fpsts</saml:Issuer>
+  <saml:Subject>
+    <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">CZ/CZ/225171f6-4662-4f04-a889-5e9b1870f608</saml:NameID>
+    <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+      <saml:SubjectConfirmationData NotOnOrAfter="2019-11-28T16:41:05Z" Recipient="https://nia.otevrenamesta.cz/ExternalLogin" InResponseTo="_4e1c9abc-74d6-4827-946d-83de8adf6a55"/>
+    </saml:SubjectConfirmation>
+  </saml:Subject>
+  <saml:Conditions NotBefore="2019-11-28T15:41:05Z" NotOnOrAfter="2019-11-28T16:41:05Z">
+    <saml:AudienceRestriction>
+      <saml:Audience>https://nia.otevrenamesta.cz/</saml:Audience>
+    </saml:AudienceRestriction>
+  </saml:Conditions>
+  <saml:AuthnStatement AuthnInstant="2019-11-28T15:41:05Z" SessionIndex="_139703d8173a40e180636c52448ca2a3">
+    <saml:AuthnContext>
+      <saml:AuthnContextClassRef>http://eidas.europa.eu/LoA/substantial</saml:AuthnContextClassRef>
+    </saml:AuthnContext>
+  </saml:AuthnStatement>
+  <saml:AttributeStatement>
+    <saml:Attribute Name="http://eidas.europa.eu/attributes/naturalperson/CurrentFamilyName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:CurrentFamilyNameType">DVOŘÁKOVÁ</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:CurrentGivenNameType">PAVLA</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://eidas.europa.eu/attributes/naturalperson/DateOfBirth" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:DateOfBirthType">1955-06-07</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://eidas.europa.eu/attributes/naturalperson/CurrentAddress" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:CurrentAddressType">PGVpZGFzOkxvY2F0b3JEZXNpZ25hdG9yPjEzMTwvZWlkYXM6TG9jYXRvckRlc2lnbmF0b3I+DQo8ZWlkYXM6VGhvcm91Z2hmYXJlPjwvZWlkYXM6VGhvcm91Z2hmYXJlPg0KPGVpZGFzOlBvc3ROYW1lPkFybm9sdGljZSB1IETEm8SNw61uYTwvZWlkYXM6UG9zdE5hbWU+DQo8ZWlkYXM6UG9zdENvZGU+NDA3MTQ8L2VpZGFzOlBvc3RDb2RlPg0KPGVpZGFzOkN2YWRkcmVzc0FyZWE+QXJub2x0aWNlPC9laWRhczpDdmFkZHJlc3NBcmVhPg0K</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://www.stork.gov.eu/1.0/isAgeOver" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="xs:string">True</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://www.stork.gov.eu/1.0/age" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="xs:string">64</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://www.stork.gov.eu/1.0/countryCodeOfBirth" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="xs:string">CZ</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://schemas.eidentita.cz/moris/2016/identity/claims/tradresaid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="xs:string">PFRSYWRyZXNhSUQgeG1sbnM9Imh0dHA6Ly9zY2hlbWFzLmVpZGVudGl0YS5jei9tb3Jpcy8yMDE2L2lkZW50aXR5L2NsYWltcy90cmFkcmVzYWlkIj4NCiAgPG9rcmVzS29kPjM1MDI8L29rcmVzS29kPg0KICA8b2JlY0tvZD41NjIzNDM8L29iZWNLb2Q+DQogIDxjYXN0T2JjZUtvZD40MzQ8L2Nhc3RPYmNlS29kPg0KICA8dWxpY2VLb2Q+PC91bGljZUtvZD4NCiAgPHBvc3RhS29kPjQwNzE0PC9wb3N0YUtvZD4NCiAgPHN0YXZlYm5pT2JqZWt0S29kPjE4MTM8L3N0YXZlYm5pT2JqZWt0S29kPg0KICA8YWRyZXNuaU1pc3RvS29kPjE4MTM8L2FkcmVzbmlNaXN0b0tvZD4NCiAgPGNpc2xvRG9tb3ZuaT4xMzE8L2Npc2xvRG9tb3ZuaT4NCiAgPGNpc2xvT3JpZW50YWNuaT48L2Npc2xvT3JpZW50YWNuaT4NCiAgPGNpc2xvT3JpZW50YWNuaVBpc21lbm8+PC9jaXNsb09yaWVudGFjbmlQaXNtZW5vPg0KPC9UUmFkcmVzYUlEPg==</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://www.stork.gov.eu/1.0/eMail" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:string">info@mawis.eu</saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue xsi:type="tn:PersonIdentifierType">CZ/CZ/225171f6-4662-4f04-a889-5e9b1870f608</saml:AttributeValue>
+    </saml:Attribute>
+  </saml:AttributeStatement>
+</saml:Assertion>
