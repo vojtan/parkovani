@@ -57,6 +57,17 @@ export async function getPermit(request: HttpRequest, context: InvocationContext
             price: response.fields.price,
             status: response.fields.status,
             variableSymbol: response.fields.variablesymbol,
+            userId: response.fields.userid,
+            firstname: response.fields.firstname || null,
+            lastname: response.fields.lastname || null,
+            email: response.fields.email || null,
+            city: response.fields.city || null,
+            street: response.fields.street || null,
+            houseNumber: response.fields.housenumber || null,
+            permitDuration: response.fields.permitduration || null,
+            paymentMethod: response.fields.paymentmethod || null,
+            carRegistration: response.fields.carregistration || null,
+
         };
 
         return {

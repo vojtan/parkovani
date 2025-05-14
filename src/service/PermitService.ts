@@ -1,7 +1,7 @@
 export interface Permit {
     carRegistration: string;
-    validFrom: Date;
-    validTo: Date;
+    validFrom: Date | null;
+    validTo: Date | null;
     price: number;
     firstname: string;
     lastname: string;
@@ -12,6 +12,7 @@ export interface Permit {
     permitDuration: string;
     paymentMethod: string;
     variableSymbol: string | null;
+    userId: string | null;
 }
 
 export const PermitService = {

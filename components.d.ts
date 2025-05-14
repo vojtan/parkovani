@@ -17,12 +17,14 @@ declare module 'vue' {
     Fluid: typeof import('primevue/fluid')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Password: typeof import('primevue/password')['default']
+    PermitInfo: typeof import('./src/components/PermitInfo.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RadioButton: typeof import('primevue/radiobutton')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SelectButton: typeof import('primevue/selectbutton')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
+    UserInfo: typeof import('./src/components/UserInfo.vue')['default']
     UserProfile: typeof import('./src/components/UserProfile.vue')['default']
   }
   export interface ComponentCustomProperties {

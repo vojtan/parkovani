@@ -143,8 +143,7 @@ export const useUserStore = defineStore("user", {
                                 cisloDomovniElement &&
                                 cisloDomovniElement.textContent
                             ) {
-                                houseNumber =
-                                    cisloDomovniElement.textContent
+                                houseNumber = cisloDomovniElement.textContent;
                             }
                         }
                     } catch (error) {
@@ -180,8 +179,9 @@ export const useUserStore = defineStore("user", {
         }, // Helper method to decode base64 encoded address
         decodeBase64Address(encodedData: string): Document | null {
             try {
-                // Base64 decode
-                const decodedData = atob(encodedData);
+                const decodedData = decodeURIComponent(
+                    escape(atob(encodedData)),
+                );
 
                 // Create a new XML document from the decoded data
                 const parser = new DOMParser();

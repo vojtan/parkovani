@@ -9,12 +9,7 @@ const router = createRouter({
         },
         {
             path: "/edit",
-            component: () => import("@/views/uikit/FormLayout.vue"),
-        },
-        {
-            path:"/login",
-            component: () => import("@/views/pages/auth/Login.vue"),
-
+            component: () => import("@/views/uikit/EditPermit.vue"),
         }
     ],
 });

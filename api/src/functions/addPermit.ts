@@ -48,6 +48,7 @@ export async function addPermit(request: HttpRequest, context: InvocationContext
             authProvider: authProvider
         });
 
+        context.log("UserId is: "+ permitData.userId);
         // Prepare the fields for the new item
         const itemFields = {
             validFrom: permitData.validFrom,
@@ -61,7 +62,8 @@ export async function addPermit(request: HttpRequest, context: InvocationContext
             housenumber: permitData.houseNumber || null,
             permitduration: permitData.permitDuration || null,
             paymentmethod: permitData.paymentMethod || null,
-            carregistration: permitData.carRegistration || null,    
+            carregistration: permitData.carRegistration || null,   
+            userid: permitData.userId || null, 
         };
 
         // Create a new item in the SharePoint list

@@ -79,8 +79,7 @@ export const useUserStore = defineStore("user", {
                             const cisloDomovniElement = tradresaDoc.querySelector("cisloDomovni");
                             if (cisloDomovniElement &&
                                 cisloDomovniElement.textContent) {
-                                houseNumber =
-                                    cisloDomovniElement.textContent;
+                                houseNumber = cisloDomovniElement.textContent;
                             }
                         }
                     }
@@ -113,8 +112,7 @@ export const useUserStore = defineStore("user", {
         }, // Helper method to decode base64 encoded address
         decodeBase64Address(encodedData) {
             try {
-                // Base64 decode
-                const decodedData = atob(encodedData);
+                const decodedData = decodeURIComponent(escape(atob(encodedData)));
                 // Create a new XML document from the decoded data
                 const parser = new DOMParser();
                 return parser.parseFromString(`<root>${decodedData}</root>`, "text/xml");
