@@ -156,4 +156,3 @@ const toStatus = (status) => {
 
     </div>
 </template>
-@/service/PermitService
