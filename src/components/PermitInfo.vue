@@ -14,7 +14,7 @@
       </div>
 
       <div class="grid grid-cols-12 gap-2 mt-4">
-        <label for="startDate" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Datun začátku
+        <label for="startDate" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Datum začátku
           oprávnění</label>
         <div class="col-span-12 md:col-span-10">
           <Calendar id="startDate" v-model="startDate" :minDate="tomorrow" dateFormat="dd.mm.yy"

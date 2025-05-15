@@ -119,8 +119,7 @@ const onSubmit = async (values: any) => {
             <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)"
                 animationDuration=".5s" />
             <span class="mt-3">Probíhá schválení žádosti. Po schválení žádosti budete přesměrováni na platební
-                bránu,
-                kde budete moct zaplatit.</span>
+                bránu, kde budete moct zaplatit.</span>
         </div>
     </Dialog>
 </template>

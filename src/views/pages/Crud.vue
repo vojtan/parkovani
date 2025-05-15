@@ -66,8 +66,10 @@ const toStatus = (status) => {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2"
-                            @click="editProduct(slotProps.data)" />
+                        <Button class="mr-2"
+                            @click="editProduct(slotProps.data)" >Prodloužit platnost</Button>
+                        <Button class="mr-2"
+                            @click="editProduct(slotProps.data)" >Dočasně změnit poznávací značku</Button>
                     </template>
                 </Column>
             </DataTable>

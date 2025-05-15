@@ -61,7 +61,7 @@ const userStore = useUserStore();
 const { firstName, lastName, city, street, houseNumber, email } = storeToRefs(userStore);
 
 onMounted(async () => {
-    userStore.loadFromXml('/src/assets/sampleuser.xml');
+    userStore.loadFromXml('/sampleuser.xml');
 });
 
 const props = defineProps({
