@@ -90,11 +90,10 @@ import { Field } from 'vee-validate';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
-import { onMounted, PropType } from 'vue';
+import { onMounted, PropType, ref, computed, watch } from 'vue';
 
-import { computed } from 'vue';
 import { usePermitStore } from '@/stores/permitStore';
-import { ZoneService, } from "@/service/ZoneService";
+import { ZoneService } from "@/service/ZoneService";
 import { storeToRefs } from 'pinia';
 
 const permitStore = usePermitStore();

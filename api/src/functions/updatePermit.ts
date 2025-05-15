@@ -3,8 +3,7 @@ const { ClientSecretCredential } = require('@azure/identity');
 const { Client } = require('@microsoft/microsoft-graph-client');
 const { TokenCredentialAuthenticationProvider } = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
 
-
-export async function permits(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function updatePermit(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
         // Get configuration values from environment variables
         const tenantId = process.env.TENANT_ID;
@@ -12,12 +11,35 @@ export async function permits(request: HttpRequest, context: InvocationContext):
         const clientSecret = process.env.CLIENT_SECRET;
         const siteId = process.env.SITE_ID;
         const listId = process.env.LIST_ID;
-        
+
         if (!tenantId || !clientId || !clientSecret || !siteId || !listId) {
             return {
                 status: 500,
                 body: JSON.stringify({
                     error: 'Missing required environment variables'
+                })
+            };
+        }
+
+        // Parse the request body
+        const id = request.params.id;
+        const body = await request.json() as any;
+        const { carRegistration } = body;
+
+        // Validate required fields
+        if (!id) {
+            return {
+                status: 400,
+                body: JSON.stringify({
+                    error: 'Missing required field: id'
+                })
+            };
+        }
+        if (!carRegistration) {
+            return {
+                status: 400,
+                body: JSON.stringify({
+                    error: 'Missing required field: carRegistration'
                 })
             };
         }
@@ -33,46 +55,41 @@ export async function permits(request: HttpRequest, context: InvocationContext):
             authProvider: authProvider
         });
 
-        // Prepare filter if carRegistration is present
-        let apiRequest = graphClient
-            .api(`/sites/${siteId}/lists/${listId}/items`)
-            .expand('fields');
+        // Prepare the fields to update
+        const updateFields = {
+            carregistration: carRegistration
+        };
 
-        const carRegistration =  request.query.get('carRegistration');
-        if (carRegistration) {
-            // Use OData filter for carRegistration field (case-insensitive)
-            apiRequest = apiRequest.filter(`fields/carregistration eq '${carRegistration}'`);
-        }
-
-        // Get list items
-        const response = await apiRequest.get();
-
-        // Extract relevant data from the response
-        const items = response.value.map(item => {
-            return item.fields;
-        });
+        // Update the item in the SharePoint list
+        await graphClient
+            .api(`/sites/${siteId}/lists/${listId}/items/${id}/fields`)
+            .patch(updateFields);
 
         return {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(items)
+            body: JSON.stringify({
+                message: 'Permit updated successfully',
+                id: id
+            })
         };
     } catch (error) {
-        
+        context.log('Error updating permit:', error);
+
         return {
             status: 500,
             body: JSON.stringify({
-                 error
+                error: error.message || 'An error occurred while updating the permit'
             })
         };
     }
-};
+}
 
-app.http('getPermits', {
-    methods: ['GET'],
+app.http('updatePermit', {
+    methods: ['POST'],
     authLevel: 'anonymous',
-    route: 'permits',
-    handler: permits
+    route: 'permits/{id}',
+    handler: updatePermit
 });

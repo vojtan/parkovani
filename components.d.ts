@@ -8,26 +8,16 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
-    Calendar: typeof import('primevue/calendar')['default']
-    Checkbox: typeof import('primevue/checkbox')['default']
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
-    FloatingConfigurator: typeof import('./src/components/FloatingConfigurator.vue')['default']
-    Fluid: typeof import('primevue/fluid')['default']
-    InputText: typeof import('primevue/inputtext')['default']
-    Password: typeof import('primevue/password')['default']
     PermitInfo: typeof import('./src/components/PermitInfo.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RadioButton: typeof import('primevue/radiobutton')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SelectButton: typeof import('primevue/selectbutton')['default']
+    Toast: typeof import('primevue/toast')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
     UserInfo: typeof import('./src/components/UserInfo.vue')['default']
-    UserProfile: typeof import('./src/components/UserProfile.vue')['default']
-  }
-  export interface ComponentCustomProperties {
-    StyleClass: typeof import('primevue/styleclass')['default']
   }
 }

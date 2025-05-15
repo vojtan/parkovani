@@ -96,7 +96,7 @@ export async function addPermit(request: HttpRequest, context: InvocationContext
 }
 
 app.http('addPermit', {
-    methods: ['POST'],
+    methods: ['PUT'],
     authLevel: 'anonymous',
     route: 'permits',
     handler: addPermit

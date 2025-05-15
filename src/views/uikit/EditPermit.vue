@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Breadcrumb from 'primevue/breadcrumb';
 import { ref } from "vue";
 import * as yup from "yup";
 import { PermitService } from "@/service/PermitService";
@@ -34,7 +33,15 @@ const validationSchema = yup.object().shape({
         .matches(
             /^[a-zA-Z0-9]{1,10}$/,
             "SPZ je v nesprávném formátu (max 10 znaků) a může obsahovat pouze písmena a číslice",
-        ),
+        ).test('exists', 'Tato SPZ již má platné oprávnění.', async (value) => {
+            if (!value) return true;
+            try {
+                const permits = await PermitService.getParkingPermits(value.trim());
+                return permits.length === 0;
+            } catch (e) {
+                return false;
+            }
+        }),
     selectedZones: yup.array().min(1, "Vyberte alespoň jednu zónu"),
     email: yup
         .string()
@@ -42,7 +49,7 @@ const validationSchema = yup.object().shape({
         .email("Zadejte platný e-mail"),
     lastName: yup.string().required("Zadejte příjmení"),
     city: yup.string().required("Zadejte město"),
-    street: yup.string().required("Zadejte adresu"),
+    street: yup.string().required("Zadejte ulici"),
 });
 
 
@@ -92,6 +99,8 @@ const onSubmit = async (values: any) => {
 
     console.log(values);
 };
+
+
 
 </script>
 
