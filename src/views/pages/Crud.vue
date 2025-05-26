@@ -1,5 +1,5 @@
-<script setup>
-import { PermitService } from "@/service/PermitService";
+<script setup lang="ts">
+import { PermitService, Permit } from "@/service/PermitService";
 import { FilterMatchMode } from "@primevue/core/api";
 import { onMounted, ref } from "vue";
 import Dialog from 'primevue/dialog';
@@ -18,22 +18,22 @@ const permitStore = usePermitStore();
 
 const { setPermitData } = permitStore;
 onMounted(() => {
-    PermitService.getParkingPermits().then((data) => (products.value = data));
+    PermitService.getParkingPermits().then((data) => (permits.value = data));
 });
 
 const dt = ref();
-const products = ref();
+const permits = ref<Array<Permit>>();
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const showCarRegDialog = ref(false);
 const carRegistration = ref('');
-const selectedRow = ref(null);
+const selectedRow = ref<Permit | null>(null);
 
-function openCarRegDialog(row) {
+function openCarRegDialog(row : Permit) {
     selectedRow.value = row;
-    carRegistration.value = row.carregistration;
+    carRegistration.value = row.carRegistration;
     showCarRegDialog.value = true;
 }
 
@@ -57,10 +57,10 @@ const validationSchema = yup.object().shape({
 
 });
 
-async function saveCarReg() {
+async function saveCarRegistration() {
     if (selectedRow.value) {
         await PermitService.updatePermit(selectedRow.value.id, carRegistration.value)
-        selectedRow.value.carregistration = carRegistration.value;
+        selectedRow.value.carRegistration = carRegistration.value;
         toast.add({
             severity: 'success',
             summary: 'Úspěch',
@@ -75,7 +75,7 @@ async function saveCarReg() {
 
 
 
-const toStatus = (status) => {
+const toStatus = (status : any) => {
     switch (status) {
         case "paid":
             return "Aktivní";
@@ -86,8 +86,8 @@ const toStatus = (status) => {
     }
 };
 
-function copyPermit(row) {
-    setPermitData(row.carregistration, row.validFrom, row.selectedZones, row.permitDuration);
+function copyPermit(row : Permit) {
+    setPermitData(row.carRegistration, row.validFrom, row.zones, row.permitDuration);
     router.push('/edit')
 }
 
@@ -103,7 +103,7 @@ function copyPermit(row) {
                 </template>
             </Toolbar>
 
-            <DataTable ref="dt" :value="products" dataKey="id" :rows="10">
+            <DataTable ref="dt" :value="permits" dataKey="id" :rows="10">
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
                         <h4 class="m-0">Vaše parkovací oprávnění</h4>
@@ -112,7 +112,7 @@ function copyPermit(row) {
 
                 <Column field="carregistration" header="SPZ" sortable style="min-width: 10rem">
                     <template #body="slotProps">
-                        {{ slotProps.data.carregistration }}
+                        {{ slotProps.data.carRegistration }}
                     </template>
                 </Column>
                 <Column field="validFrom" header="Platnost od" sortable style="min-width: 12rem">
@@ -145,7 +145,7 @@ function copyPermit(row) {
 
         <Dialog v-model:visible="showCarRegDialog" header="Změnit poznávací značku" :modal="true" :closable="true">
             <div class="flex flex-col gap-4">
-                <Form :validation-schema="validationSchema" v-slot="{ errors, isValidating, isSubmitting }" @submit="saveCarReg" class="card">
+                <Form :validation-schema="validationSchema" v-slot="{ errors, isValidating, isSubmitting }" @submit="saveCarRegistration" class="card">
                     <div class="grid grid-cols-12 gap-2">
                         <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Nová
                             poznávací

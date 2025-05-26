@@ -74,6 +74,9 @@ const onSubmit = async (values: any) => {
         paymentMethod: selectedPayment.value,
         variableSymbol: null,
         userId: userId.value,
+        id: "0",
+        zones: selectedZones.value.map((zone) => zone.name)
+
     });
 
     setTimeout(async () => {

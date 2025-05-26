@@ -32,7 +32,7 @@
 		{
 			"type": "shell",
 			"label": "swa: start",
-			"command": "swa start --api-location ./api --api-debug",
+			"command": "swa start --api-location ./api",
 			"problemMatcher": "$msCompile",
 			"isBackground": true,
 			"options": {

@@ -1,6 +1,7 @@
 export interface Permit {
+    id: string;
     carRegistration: string;
-    validFrom: Date | null;
+    validFrom: Date ;
     validTo: Date | null;
     price: number;
     firstname: string;
@@ -13,10 +14,12 @@ export interface Permit {
     paymentMethod: string;
     variableSymbol: string | null;
     userId: string | null;
+    zones: Array<string> ;
 }
 
+
 export const PermitService = {
-    async getParkingPermits(carRegistration?: string) {
+    async getParkingPermits(carRegistration?: string) : Promise<Permit[]> {
         var requestUrl = "/api/permits";
         if (carRegistration) {
             requestUrl += `?carRegistration=${carRegistration}`;

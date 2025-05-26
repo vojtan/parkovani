@@ -74,12 +74,12 @@ export const usePermitStore = defineStore("permit", () => {
     const setPermitData = (
         newCarRegistration: string,
         newStartDate:Date,
-        newSelectedZones: Zone[],
+        newSelectedZones: string[],
         newPermitDuration: string
     ) => {
         carRegistration.value = newCarRegistration;
         startDate.value = newStartDate;
-        selectedZones.value = newSelectedZones;
+        selectedZones.value = zones.value.filter(x=> newSelectedZones.indexOf(x.name) !== -1);
         selectedDuration.value = newPermitDuration;
     };
 

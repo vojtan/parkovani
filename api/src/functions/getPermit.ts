@@ -67,7 +67,7 @@ export async function getPermit(request: HttpRequest, context: InvocationContext
             permitDuration: response.fields.permitduration || null,
             paymentMethod: response.fields.paymentmethod || null,
             carRegistration: response.fields.carregistration || null,
-
+            zones: response.fields.zones || null,
         };
 
         return {
