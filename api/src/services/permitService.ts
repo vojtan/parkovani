@@ -43,15 +43,17 @@ export class PermitService {
         });
     }
 
-    public static async getPermitById(permitId: string): Promise<PermitDto | null> {
+    public static async getPermitById(
+        permitId: string,
+    ): Promise<PermitDto | null> {
         const graphClient = await PermitService.getGraphClient();
-      
+
         const response = await graphClient
             .api(
                 `/sites/${PermitService.siteId}/lists/${PermitService.listId}/items/${permitId}?expand=fields`,
             )
             .get();
-        
+
         return {
             id: response.id,
             validFrom: response.fields.validFrom,
@@ -106,23 +108,28 @@ export class PermitService {
                 fields: itemFields,
             });
     }
-    public static async getPermits(carRegistration?: string): Promise<PermitDto[]> {
-          const graphClient = await PermitService.getGraphClient();
-        
-                // Prepare filter if carRegistration is present
-                let apiRequest = graphClient
-                    .api(`/sites/${PermitService.siteId}/lists/${PermitService.listId}/items`)
-                    .expand('fields');
-        
-                if (carRegistration) {
-                    apiRequest = apiRequest.filter(`fields/carRegistration eq '${carRegistration}'`);
-                }
-                const response = await apiRequest.get();
-        
-                // Extract relevant data from the response
-                return response.value.map(item => {
-                    return item.fields;
-                });
-        
+    public static async getPermits(
+        carRegistration?: string,
+    ): Promise<PermitDto[]> {
+        const graphClient = await PermitService.getGraphClient();
+
+        // Prepare filter if carRegistration is present
+        let apiRequest = graphClient
+            .api(
+                `/sites/${PermitService.siteId}/lists/${PermitService.listId}/items`,
+            )
+            .expand("fields");
+
+        if (carRegistration) {
+            apiRequest = apiRequest.filter(
+                `fields/carRegistration eq '${carRegistration}'`,
+            );
+        }
+        const response = await apiRequest.get();
+
+        // Extract relevant data from the response
+        return response.value.map((item) => {
+            return item.fields;
+        });
     }
 }

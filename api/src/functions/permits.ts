@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { PermitService } from "../services/permitService";
-import { ConfigurationError } from "../errors";
+import { handleError } from "../utils/errorHandler";
 
 export async function permits(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
@@ -14,22 +14,7 @@ export async function permits(request: HttpRequest, context: InvocationContext):
             body: JSON.stringify(items)
         };
     } catch (error) {
-        context.log('Error retrieving permits:', error);
-        if (error instanceof ConfigurationError) {
-            return {
-                status: 500,
-                body: JSON.stringify({
-                    error: 'Configuration error: ' + error.message
-                })
-            };
-        }
-        
-        return {
-            status: 500,
-            body: JSON.stringify({
-                 error
-            })
-        };
+        return handleError(error, context, "An error occurred while retrieving permits");
     }
 };
 

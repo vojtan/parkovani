@@ -7,7 +7,7 @@ import {
 import { PermitData, PermitSchema } from "../schemas/permitSchema";
 import { withValidation } from "../middleware/validation";
 import { PermitService } from "../services/permitService";
-import { ConfigurationError } from "../errors";
+import { handleError } from "../utils/errorHandler";
 
 export async function addPermit(
     request: HttpRequest,
@@ -27,28 +27,12 @@ export async function addPermit(
             }),
         };
     } catch (error) {
-        if (error instanceof ConfigurationError)
-        {
-            return {
-                status: 500,
-                body: JSON.stringify({
-                    error: "Configuration error: " + error.message,
-                }),
-            };
-        }
-        return {
-            status: 500,
-            body: JSON.stringify({
-                error:
-                    error.message ||
-                    "An error occurred while adding the permit",
-            }),
-        };
+        return handleError(error, context, "An error occurred while adding the permit");
     }
 }
 
 app.http("addPermit", {
-    methods: ["PUT"],
+    methods: ["POST"],
     authLevel: "anonymous",
     route: "permits",
     handler: withValidation(addPermit, PermitSchema),
