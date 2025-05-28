@@ -41,7 +41,7 @@ export const PermitService = {
     },
     async addPermit(permitData : Permit) {
         const response = await fetch("/api/permits", {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -57,7 +57,7 @@ export const PermitService = {
 
     async updatePermit(id: string, carRegistration: string) {
         const response = await fetch(`/api/permits/${id}`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },

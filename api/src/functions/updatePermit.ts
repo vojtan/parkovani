@@ -1,4 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { withValidation } from "../middleware/validation";
+import { PermitSchema } from "../schemas/permitSchema";
 const { ClientSecretCredential } = require('@azure/identity');
 const { Client } = require('@microsoft/microsoft-graph-client');
 const { TokenCredentialAuthenticationProvider } = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
@@ -26,20 +28,11 @@ export async function updatePermit(request: HttpRequest, context: InvocationCont
         const body = await request.json() as any;
         const { carRegistration } = body;
 
-        // Validate required fields
         if (!id) {
             return {
                 status: 400,
                 body: JSON.stringify({
                     error: 'Missing required field: id'
-                })
-            };
-        }
-        if (!carRegistration) {
-            return {
-                status: 400,
-                body: JSON.stringify({
-                    error: 'Missing required field: carRegistration'
                 })
             };
         }
@@ -88,8 +81,8 @@ export async function updatePermit(request: HttpRequest, context: InvocationCont
 }
 
 app.http('updatePermit', {
-    methods: ['POST'],
+    methods: ['PUT'],
     authLevel: 'anonymous',
     route: 'permits/{id}',
-    handler: updatePermit
+    handler: withValidation(updatePermit, PermitSchema)
 });

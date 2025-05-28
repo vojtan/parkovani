@@ -44,7 +44,7 @@ export class PermitService {
     }
 
     public static async getPermitById(
-        permitId: string,
+        permitId: number,
     ): Promise<PermitDto | null> {
         const graphClient = await PermitService.getGraphClient();
 
@@ -127,7 +127,6 @@ export class PermitService {
         }
         const response = await apiRequest.get();
 
-        // Extract relevant data from the response
         return response.value.map((item) => {
             return item.fields;
         });
