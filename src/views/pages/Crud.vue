@@ -13,6 +13,7 @@ import { usePermitStore } from '@/stores/permitStore';
 
 import { useRouter } from 'vue-router'; 
 import Button from 'primevue/button';
+import { getDateFromDateTime } from "@/utils/utiltities";
 const router = useRouter(); 
 const permitStore = usePermitStore();
 
@@ -73,11 +74,14 @@ async function saveCarRegistration() {
     }
 }
 
+type PermitStatus = 'paid' | 'submitted';
 
-
-const toStatus = (status : any) => {
+const toStatus = (status: PermitStatus, endDate: Date) => {
     switch (status) {
         case "paid":
+            if (getDateFromDateTime(endDate) < getDateFromDateTime(new Date())) {
+                return "Platnost vypršela";
+            }
             return "Aktivní";
         case "submitted":
             return "Čeká na zaplacení";
@@ -129,7 +133,7 @@ function copyPermit(row : Permit) {
                 </Column>
                 <Column field="status" header="Stav" sortable style="min-width: 10rem">
                     <template #body="slotProps">
-                        {{ toStatus(slotProps.data.status) }}
+                        {{ toStatus(slotProps.data.status, slotProps.data.validTo) }}
                     </template>
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem">

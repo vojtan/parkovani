@@ -17,7 +17,6 @@ export interface Permit {
     zones: Array<string> ;
 }
 
-
 export const PermitService = {
     async getParkingPermits(carRegistration?: string) : Promise<Permit[]> {
         var requestUrl = "/api/permits";

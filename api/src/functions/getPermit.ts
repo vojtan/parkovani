@@ -6,31 +6,14 @@ import {
 } from "@azure/functions";
 import { PermitService } from "../services/permitService";
 import { handleError } from "../utils/errorHandler";
+import { withPathValidation } from "../middleware/pathValidation";
 
 export async function getPermit(
     request: HttpRequest,
     context: InvocationContext,
 ): Promise<HttpResponseInit> {
     try {
-        if (!request.params.id) {
-            return {
-                status: 400,
-                body: JSON.stringify({
-                    error: "Permit ID is required",
-                }),
-            };
-        }
-        
         const id = parseInt(request.params.id);
-        if (isNaN(id) || id.toString() !== request.params.id) {
-            return {
-                status: 400,
-                body: JSON.stringify({
-                    error: "Permit ID must be an integer number",
-                }),
-            };
-        }
-
         const permit = await PermitService.getPermitById(id);
         return {
             status: 200,
@@ -48,5 +31,5 @@ app.http("getPermit", {
     methods: ["GET"],
     authLevel: "anonymous",
     route: "permits/{id}",
-    handler: getPermit,
+    handler: withPathValidation(getPermit, { id: 'integer' }),
 });
