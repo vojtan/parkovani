@@ -1,48 +1,41 @@
 import { defineStore, storeToRefs } from "pinia";
 import { ref, computed } from "vue";
-import { PermitDuration, Zone } from "@/service/ZoneService";
 import { useUserStore } from "./user";
-
 const userStore = useUserStore();
-
 const { street, houseNumber, city } = storeToRefs(userStore);
-
 export const usePermitStore = defineStore("permit", () => {
     const tomorrow = ref(new Date());
     tomorrow.value.setDate(tomorrow.value.getDate() + 1);
-
     const carRegistration = ref("");
-
-    const startDate = ref<Date>(tomorrow.value);
+    const startDate = ref(tomorrow.value);
     startDate.value.setDate(startDate.value.getDate() + 1);
     const endDate = computed(() => {
-        if (!startDate.value) return null;
+        if (!startDate.value)
+            return null;
         const start = new Date(startDate.value);
         if (selectedDuration.value === "quarter") {
             start.setMonth(start.getMonth() + 3);
-        } else if (selectedDuration.value === "year") {
+        }
+        else if (selectedDuration.value === "year") {
             start.setFullYear(start.getFullYear() + 1);
         }
         return start;
     });
-
-    const zones = ref<Zone[]>([]);
-
-    const selectedZones = ref<Zone[]>([]);
-    const selectedDuration = ref<PermitDuration> ("year");
+    const zones = ref([]);
+    const selectedZones = ref([]);
+    const selectedDuration = ref("year");
     const selectedPayment = ref("online");
-
     const totalPrice = computed(() => {
         let result = 0;
         if (selectedZones.value) {
             selectedZones.value.forEach((zone) => {
                 const homeZone = isHomeZone(zone);
-
                 if (selectedDuration.value === "quarter") {
                     result += homeZone
                         ? zone.pricePerQuarterWithDiscount
                         : zone.pricePerQuarter;
-                } else if (selectedDuration.value === "year") {
+                }
+                else if (selectedDuration.value === "year") {
                     result += homeZone
                         ? zone.pricePerYearWithDiscount
                         : zone.pricePerYear;
@@ -51,11 +44,8 @@ export const usePermitStore = defineStore("permit", () => {
         }
         return result;
     });
-
-    const isHomeZone = (zone: Zone) => {
-        const addresses = zone.adresses.filter(
-            (x) => x.street == street.value && "Děčín" == city.value,
-        );
+    const isHomeZone = (zone) => {
+        const addresses = zone.adresses.filter((x) => x.street == street.value && "Děčín" == city.value);
         if (addresses.length === 0) {
             return false;
         }
@@ -63,27 +53,17 @@ export const usePermitStore = defineStore("permit", () => {
         if (address.numbers.length === 0) {
             return true;
         }
-
         return address.numbers.filter((x) => x == houseNumber.value).length > 0;
     };
-
-    const updateZones = (newZones: Zone[]) => {
+    const updateZones = (newZones) => {
         zones.value = newZones;
     };
-
-
-    const setPermitData = (
-        newCarRegistration: string,
-        newStartDate: Date,
-        newSelectedZones: ("Děčín" | "Podmokly")[],
-        newPermitDuration: PermitDuration
-    ) => {
+    const setPermitData = (newCarRegistration, newStartDate, newSelectedZones, newPermitDuration) => {
         carRegistration.value = newCarRegistration;
         startDate.value = newStartDate;
         selectedZones.value = zones.value.filter(x => newSelectedZones.indexOf(x.name) !== -1);
         selectedDuration.value = newPermitDuration;
     };
-
     return {
         tomorrow,
         carRegistration,
@@ -98,3 +78,4 @@ export const usePermitStore = defineStore("permit", () => {
         setPermitData,
     };
 });
+//# sourceMappingURL=permitStore.js.map

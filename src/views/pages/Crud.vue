@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { PermitService, Permit } from "@/service/PermitService";
-import { FilterMatchMode } from "@primevue/core/api";
+import { PermitService } from "@/service/PermitService";
 import { onMounted, ref } from "vue";
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -14,6 +13,7 @@ import { usePermitStore } from '@/stores/permitStore';
 import { useRouter } from 'vue-router'; 
 import Button from 'primevue/button';
 import { getDateFromDateTime } from "@/utils/utiltities";
+import { PermitResponse } from "api/src/schemas/permitschema";
 const router = useRouter(); 
 const permitStore = usePermitStore();
 
@@ -23,18 +23,15 @@ onMounted(() => {
 });
 
 const dt = ref();
-const permits = ref<Array<Permit>>();
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+const permits = ref<Array<PermitResponse>>();
 
 const showCarRegDialog = ref(false);
 const carRegistration = ref('');
-const selectedRow = ref<Permit | null>(null);
+const selectedRow = ref<PermitResponse | null>(null);
 
-function openCarRegDialog(row : Permit) {
+function openCarRegDialog(row : PermitResponse) {
     selectedRow.value = row;
-    carRegistration.value = row.carRegistration;
+    carRegistration.value = row.carRegistration!;
     showCarRegDialog.value = true;
 }
 
@@ -90,11 +87,10 @@ const toStatus = (status: PermitStatus, endDate: Date) => {
     }
 };
 
-function copyPermit(row : Permit) {
-    setPermitData(row.carRegistration, row.validFrom, row.zones, row.permitDuration);
+function copyPermit(row : PermitResponse) {
+    setPermitData(row.carRegistration, row.validFrom, row.zones!, row.permitDuration!);
     router.push('/edit')
 }
-
 </script>
 
 <template>

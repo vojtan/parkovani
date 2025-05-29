@@ -4,17 +4,17 @@ import {
     HttpResponseInit,
     InvocationContext,
 } from "@azure/functions";
-import { PermitData, PermitSchema } from "../schemas/permitSchema";
 import { withValidation } from "../middleware/validation";
 import { handleError } from "../utils/errorHandler";
 import { IPermitRepository } from "../interfaces/IPermitRepository";
 import { TYPES } from "../di/types";
 import { DIContainer } from "../di/container";
+import { AddPermitRequest, PermitSchema } from "../schemas/permitSchema";
 
 export async function addPermit(
     request: HttpRequest,
     context: InvocationContext,
-    permitData: PermitData
+    permitData: AddPermitRequest
 ): Promise<HttpResponseInit> {
     try {
         const container = DIContainer.getContainer();

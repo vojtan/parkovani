@@ -7,7 +7,7 @@ const {
 
 import { IPermitRepository } from "../interfaces/IPermitRepository";
 import { ConfigurationError } from "../errors";
-import { AddPermitDto, PermitDto } from "../types/permit";
+import { AddPermitRequest, PermitResponse } from "../schemas/permitSchema";
 
 @injectable()
 export class SharePointPermitRepository implements IPermitRepository {
@@ -25,9 +25,15 @@ export class SharePointPermitRepository implements IPermitRepository {
         this.siteId = process.env.SITE_ID!;
         this.listId = process.env.LIST_ID!;
 
-        if (!this.tenantId || !this.clientId || !this.clientSecret || !this.siteId || !this.listId) {
+        if (
+            !this.tenantId ||
+            !this.clientId ||
+            !this.clientSecret ||
+            !this.siteId ||
+            !this.listId
+        ) {
             throw new ConfigurationError(
-                "SharePoint configuration incomplete. Check environment variables: TENANT_ID, CLIENT_ID, CLIENT_SECRET, SITE_ID, LIST_ID"
+                "SharePoint configuration incomplete. Check environment variables: TENANT_ID, CLIENT_ID, CLIENT_SECRET, SITE_ID, LIST_ID",
             );
         }
     }
@@ -43,7 +49,7 @@ export class SharePointPermitRepository implements IPermitRepository {
                 this.clientId,
                 this.clientSecret,
             );
-            
+
             const authProvider = new TokenCredentialAuthenticationProvider(
                 credential,
                 {
@@ -56,7 +62,7 @@ export class SharePointPermitRepository implements IPermitRepository {
             });
         } catch (error) {
             throw new ConfigurationError(
-                `Failed to initialize Graph client: ${error instanceof Error ? error.message : 'Unknown error'}`
+                `Failed to initialize Graph client: ${error instanceof Error ? error.message : "Unknown error"}`,
             );
         }
     }
@@ -66,11 +72,10 @@ export class SharePointPermitRepository implements IPermitRepository {
      * @param item - SharePoint list item response
      * @returns Mapped PermitDto object
      */
-    private mapToPermitDto(item: any): PermitDto {
+    private mapToPermitDto(item: any): PermitResponse {
         return {
             id: item.id,
             validFrom: item.fields.validFrom,
-            validTo: item.fields.validTo,
             price: item.fields.price,
             status: item.fields.status,
             variableSymbol: item.fields.variableSymbol,
@@ -88,31 +93,61 @@ export class SharePointPermitRepository implements IPermitRepository {
         };
     }
 
-    async getPermitById(permitId: number): Promise<PermitDto | null> {
+    async getPermitById(permitId: number): Promise<PermitResponse | null> {
         try {
             const graphClient = await this.getGraphClient();
 
             const response = await graphClient
-                .api(`/sites/${this.siteId}/lists/${this.listId}/items/${permitId}?expand=fields`)
+                .api(
+                    `/sites/${this.siteId}/lists/${this.listId}/items/${permitId}?expand=fields`,
+                )
                 .get();
 
             return this.mapToPermitDto(response);
         } catch (error) {
-            if (error && typeof error === 'object' && 'code' in error && error.code === 'itemNotFound') {
+            if (
+                error &&
+                typeof error === "object" &&
+                "code" in error &&
+                error.code === "itemNotFound"
+            ) {
                 return null;
             }
-            throw new Error(`Failed to retrieve permit ${permitId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(
+                `Failed to retrieve permit ${permitId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
         }
     }
 
-    async addPermit(permitData: Partial<AddPermitDto>): Promise<{ id: number }> {
+    async addPermit(
+        permitData: Partial<AddPermitRequest>,
+    ): Promise<{ id: number }> {
+        const calculateEndDate = (
+            start?: Date,
+            permitDuration?: "quarter" | "year",
+        ): Date => {
+            if (!start) return null;
+            let result = new Date(start);
+            if (permitDuration === "quarter") {
+                result.setMonth(result.getMonth() + 3);
+            } else if (permitDuration === "year") {
+                result.setFullYear(result.getFullYear() + 1);
+            }
+            return result;
+        };
+
         try {
             const itemFields = {
-                validFrom: permitData.validFrom,
-                validTo: permitData.validTo,
+                validFrom: permitData.validFrom.toISOString(),
+                validTo: calculateEndDate(
+                    permitData.validFrom,
+                    permitData.permitDuration,
+                ).toISOString(),
                 price: permitData.price,
                 firstName: permitData.firstName || null,
                 lastName: permitData.lastName || null,
+                "zones@odata.type": "Collection(Edm.String)",
+                "zones": [ "Podmokly" ],
                 email: permitData.email || null,
                 city: permitData.city || null,
                 street: permitData.street || null,
@@ -121,11 +156,10 @@ export class SharePointPermitRepository implements IPermitRepository {
                 paymentMethod: permitData.paymentMethod || null,
                 carRegistration: permitData.carRegistration || null,
                 userId: permitData.userId || null,
-                zones: permitData.zones || null,
             };
 
             const graphClient = await this.getGraphClient();
-            
+
             const result = await graphClient
                 .api(`/sites/${this.siteId}/lists/${this.listId}/items`)
                 .post({
@@ -134,11 +168,13 @@ export class SharePointPermitRepository implements IPermitRepository {
 
             return { id: result.id };
         } catch (error) {
-            throw new Error(`Failed to add permit: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(
+                `Failed to add permit: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
         }
     }
 
-    async getPermits(carRegistration?: string): Promise<PermitDto[]> {
+    async getPermits(carRegistration?: string): Promise<PermitResponse[]> {
         try {
             const graphClient = await this.getGraphClient();
 
@@ -148,7 +184,7 @@ export class SharePointPermitRepository implements IPermitRepository {
 
             if (carRegistration) {
                 apiRequest = apiRequest.filter(
-                    `fields/carRegistration eq '${carRegistration}'`
+                    `fields/carRegistration eq '${carRegistration}'`,
                 );
             }
 
@@ -156,7 +192,9 @@ export class SharePointPermitRepository implements IPermitRepository {
 
             return response.value.map((item: any) => this.mapToPermitDto(item));
         } catch (error) {
-            throw new Error(`Failed to retrieve permits: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(
+                `Failed to retrieve permits: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
         }
     }
 }

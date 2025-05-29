@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 export const PermitSchema = z.object({
     validFrom: z.coerce.date(),
     price: z.number().positive('Price must be a positive number'),
@@ -15,17 +14,8 @@ export const PermitSchema = z.object({
     paymentMethod: z.string(),
     carRegistration: z.string().min(1, 'Car registration is required'),
     userId: z.string(),
-    zones: z.array(
-        z.enum(["Děčín", "Podmokly"], {
-            errorMap: () => ({ message: 'Zone must be either "Děčín" or "Podmokly"' })
-        })
-    ),
+    zones: z.array(z.enum(["Děčín", "Podmokly"], {
+        errorMap: () => ({ message: 'Zone must be either "Děčín" or "Podmokly"' })
+    })),
 });
-
-export type AddPermitRequest = z.infer<typeof PermitSchema>;
-
-export interface PermitResponse extends AddPermitRequest {
-    id: number,
-    status: string;
-    variableSymbol: string | null;
-}
+//# sourceMappingURL=permitschema.js.map

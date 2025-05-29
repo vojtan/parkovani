@@ -62,21 +62,17 @@ const onSubmit = async (values: any) => {
     var result = await PermitService.addPermit({
         carRegistration: carRegistration.value,
         validFrom: startDate.value,
-        validTo: endDate.value,
         price: totalPrice.value,
-        firstname: firstName.value,
-        lastname: lastName.value,
+        firstName: firstName.value,
+        lastName: lastName.value,
         email: email.value,
         city: city.value,
         street: street.value,
         houseNumber: houseNumber.value,
         permitDuration: selectedDuration.value,
         paymentMethod: selectedPayment.value,
-        variableSymbol: null,
         userId: userId.value,
-        id: "0",
         zones: selectedZones.value.map((zone) => zone.name)
-
     });
 
     setTimeout(async () => {

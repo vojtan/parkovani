@@ -1,5 +1,4 @@
-
-export interface Address{
+export interface Address {
     street: string;
     numbers: string[];
 }
@@ -8,13 +7,14 @@ export interface Zone {
     pricePerQuarter: number;
     pricePerYearWithDiscount: number;
     pricePerQuarterWithDiscount: number;
-    name: string;
+    name: "Děčín" | "Podmokly";
     adresses: Address[];
 }
 
+export type PermitDuration = "quarter" | "year";
 
 export const ZoneService = {
-    getData() : Zone[] {
+    getData(): Zone[] {
         return [
             {
                 pricePerYear: 4000,
@@ -23,7 +23,7 @@ export const ZoneService = {
                 pricePerQuarterWithDiscount: 500,
                 name: "Děčín",
                 adresses: [
-                    { street: "Zámecká", numbers:["1087"] },
+                    { street: "Zámecká", numbers: ["1087"] },
                     { street: "Tyršova", numbers: [] },
                     { street: "Karla Čapka", numbers: [] },
                     { street: "Labská", numbers: [] },
@@ -36,7 +36,17 @@ export const ZoneService = {
                 pricePerQuarterWithDiscount: 500,
                 name: "Podmokly",
                 adresses: [
-                    { street: "Teplická", numbers: ["377/86", "376/84", "372/76", "832/74", "372/72", "370/70"] },
+                    {
+                        street: "Teplická",
+                        numbers: [
+                            "377/86",
+                            "376/84",
+                            "372/76",
+                            "832/74",
+                            "372/72",
+                            "370/70",
+                        ],
+                    },
                     { street: "Chelčického", numbers: [] },
                     { street: "Jeronýmova", numbers: [] },
                     { street: "Máchovo náměstí", numbers: [] },
@@ -45,9 +55,9 @@ export const ZoneService = {
                     { street: "Prokopa Holého", numbers: [] },
                 ],
             },
-        ]
+        ];
     },
-    getZones:  (): Zone[] => {
-        return  ZoneService.getData()
+    getZones: (): Zone[] => {
+        return ZoneService.getData();
     },
-}
+};

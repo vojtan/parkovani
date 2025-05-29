@@ -20,11 +20,11 @@ export const PermitService = {
     },
     async addPermit(permitData) {
         const response = await fetch("/api/permits", {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(permitData)
+            body: JSON.stringify(permitData),
         });
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -33,16 +33,16 @@ export const PermitService = {
     },
     async updatePermit(id, carRegistration) {
         const response = await fetch(`/api/permits/${id}`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ carRegistration })
+            body: JSON.stringify({ carRegistration }),
         });
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return await response.json();
-    }
+    },
 };
 //# sourceMappingURL=PermitService.js.map

@@ -21,7 +21,17 @@ export const ZoneService = {
                 pricePerQuarterWithDiscount: 500,
                 name: "Podmokly",
                 adresses: [
-                    { street: "Teplická", numbers: ["377/86", "376/84", "372/76", "832/74", "372/72", "370/70"] },
+                    {
+                        street: "Teplická",
+                        numbers: [
+                            "377/86",
+                            "376/84",
+                            "372/76",
+                            "832/74",
+                            "372/72",
+                            "370/70",
+                        ],
+                    },
                     { street: "Chelčického", numbers: [] },
                     { street: "Jeronýmova", numbers: [] },
                     { street: "Máchovo náměstí", numbers: [] },
