@@ -6,8 +6,10 @@ import {
 } from "@azure/functions";
 import { PermitData, PermitSchema } from "../schemas/permitSchema";
 import { withValidation } from "../middleware/validation";
-import { PermitService } from "../services/permitService";
 import { handleError } from "../utils/errorHandler";
+import { IPermitRepository } from "../interfaces/IPermitRepository";
+import { TYPES } from "../di/types";
+import { DIContainer } from "../di/container";
 
 export async function addPermit(
     request: HttpRequest,
@@ -15,7 +17,10 @@ export async function addPermit(
     permitData: PermitData
 ): Promise<HttpResponseInit> {
     try {
-        const response = await PermitService.addPermit(permitData);
+        const container = DIContainer.getContainer();
+        const permitRepository = container.get<IPermitRepository>(TYPES.PermitRepository);
+
+        const response = await permitRepository.addPermit(permitData);
         return {
             status: 201,
             headers: {

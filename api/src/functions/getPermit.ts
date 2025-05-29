@@ -4,9 +4,11 @@ import {
     HttpResponseInit,
     InvocationContext,
 } from "@azure/functions";
-import { PermitService } from "../services/permitService";
+import { DIContainer } from "../di/container";
+import { TYPES } from "../di/types";
 import { handleError } from "../utils/errorHandler";
 import { withPathValidation } from "../middleware/pathValidation";
+import { IPermitRepository } from "../interfaces/IPermitRepository";
 
 export async function getPermit(
     request: HttpRequest,
@@ -14,7 +16,10 @@ export async function getPermit(
 ): Promise<HttpResponseInit> {
     try {
         const id = parseInt(request.params.id);
-        const permit = await PermitService.getPermitById(id);
+        const container = DIContainer.getContainer();
+        const permitRepository = container.get<IPermitRepository>(TYPES.PermitRepository);
+        const permit = await permitRepository.getPermitById(id);
+        
         return {
             status: 200,
             headers: {
